@@ -7,8 +7,8 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -25,7 +25,7 @@ public class PollingSchedulerTest {
     private static final Integer HTTP_HEALTH_CHECK_TIMEOUT = 1;
 
     @Mock
-    private Supplier<Map<UUID, AppInfo>> allAppsGetter;
+    private Supplier<Collection<AppInfo>> allAppsGetter;
 
     @Test
     public void should_poll_at_least_once_in_double_of_the_defined_interval() throws Exception {
@@ -55,13 +55,13 @@ public class PollingSchedulerTest {
                 HTTP_HEALTH_CHECK_THREAD_POOL, HTTP_HEALTH_CHECK_TIMEOUT, allAppsGetter);
     }
 
-    private Map<UUID, AppInfo> testApps() {
+    private Collection<AppInfo> testApps() {
         final UUID appId1 = UUID.fromString("9ffd8b46-d4d4-4a7d-98dc-bb903bdf3024");
         final UUID appId2 = UUID.fromString("031e8657-9066-40ce-9c0d-aba6c1820474");
 
-        final Map<UUID, AppInfo> daMap = new HashMap<>();
-        daMap.put(appId1, new AppInfo(new AppReg("app1", "1.0.0", "foohost"), appId1));
-        daMap.put(appId2, new AppInfo(new AppReg("app2", "2.0.0", "barhost", "http://localhost:12345/foobar"), appId2));
-        return daMap;
+        return Arrays.asList(
+                new AppInfo(new AppReg("app1", "1.0.0", "foohost"), appId1),
+                new AppInfo(new AppReg("app2", "2.0.0", "barhost", "http://localhost:12345/foobar"), appId2)
+        );
     }
 }

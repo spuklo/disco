@@ -46,7 +46,7 @@ public class DiscoWebServer {
         port(httpPort);
 
         get("/v1/apps", (request, response) -> {
-            return appStorageBackend.getAllStoredAppInfo().values().stream()
+            return appStorageBackend.getAllStoredAppInfo().stream()
                     .filter(requestedAppFilter(request)).collect(Collectors.toList());
         }, gson::toJson);
 
@@ -67,7 +67,7 @@ public class DiscoWebServer {
         put("/v1/apps/:appId/ping", (request, response) -> {
             final UUID appId = appIdOr404(request.params("appId"));
             final AppInfo anApp = appOr404(appStorageBackend.getAppInfo(appId));
-            anApp.updateLastPingTime();
+            anApp.updateLastPingTime(); // safe as appOr404() will give an object or will throw an exception
             appStorageBackend.putAppInfo(anApp);
             LOGGER.info("Ping update from app with id {}", appId);
             return null;
@@ -90,7 +90,7 @@ public class DiscoWebServer {
             return maybeApp.get();
         }
         halt(SC_NOT_FOUND);
-        return null;
+        return null; // this is never returned as halt() throws an exception
     }
 
     private UUID appIdOr404(final String maybeUuid) {

@@ -4,8 +4,8 @@ import net.puklo.disco.model.AppInfo;
 import net.puklo.disco.model.AppReg;
 import net.puklo.disco.server.AppStorage;
 
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -70,7 +70,7 @@ public class InMemoryAppStorage implements AppStorage {
     }
 
     @Override
-    public Map<UUID, AppInfo> getAllStoredAppInfo() {
-        return Collections.unmodifiableMap(apps);
+    public Collection<AppInfo> getAllStoredAppInfo() {
+        return Collections.unmodifiableCollection(apps.values());
     }
 }

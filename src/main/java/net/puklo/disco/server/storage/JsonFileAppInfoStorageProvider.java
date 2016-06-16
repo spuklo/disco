@@ -4,7 +4,7 @@ import net.puklo.disco.model.AppInfo;
 import net.puklo.disco.model.AppReg;
 import net.puklo.disco.server.AppStorage;
 
-import java.util.Map;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -31,7 +31,7 @@ public class JsonFileAppInfoStorageProvider implements AppStorage {
     }
 
     @Override
-    public Map<UUID, AppInfo> getAllStoredAppInfo() {
+    public Collection<AppInfo> getAllStoredAppInfo() {
         return null;
     }
 }

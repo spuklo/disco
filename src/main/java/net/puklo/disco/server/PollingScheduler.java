@@ -7,8 +7,7 @@ import net.puklo.disco.model.AppInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
-import java.util.UUID;
+import java.util.Collection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -32,7 +31,7 @@ public class PollingScheduler {
     public PollingScheduler(final Integer pollingInterval,
                             final Integer healthCheckersThreadPool,
                             final Integer healthCheckTimeout,
-                            final Supplier<Map<UUID, AppInfo>> allAppsGetter) {
+                            final Supplier<Collection<AppInfo>> allAppsGetter) {
 
         final ScheduledExecutorService pollingScheduler = Executors.newSingleThreadScheduledExecutor(
                 runnable -> new Thread(runnable, "healthCheckScheduler"));
@@ -45,9 +44,9 @@ public class PollingScheduler {
         pollingScheduler.scheduleAtFixedRate(mainScheduler(allAppsGetter), 1L, pollingInterval, TimeUnit.SECONDS);
     }
 
-    private Runnable mainScheduler(final Supplier<Map<UUID, AppInfo>> allAppsGetter) {
+    private Runnable mainScheduler(final Supplier<Collection<AppInfo>> allAppsGetter) {
         return () -> {
-            final Stream<AppInfo> appsWithHealthCheckUrl = allAppsGetter.get().values().stream().filter(app -> app.hasHealthUrl());
+            final Stream<AppInfo> appsWithHealthCheckUrl = allAppsGetter.get().stream().filter(app -> app.hasHealthUrl());
             appsWithHealthCheckUrl.forEach(app ->
                     healthCheckExecutorsPool.submit(() -> {
                         try {
