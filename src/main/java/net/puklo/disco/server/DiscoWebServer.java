@@ -5,9 +5,14 @@ import net.puklo.disco.model.AppInfo;
 import net.puklo.disco.model.AppReg;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spark.Request;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static javax.servlet.http.HttpServletResponse.SC_CREATED;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
@@ -41,7 +46,8 @@ public class DiscoWebServer {
         port(httpPort);
 
         get("/v1/apps", (request, response) -> {
-            return appStorageBackend.getAllStoredAppInfo();
+            return appStorageBackend.getAllStoredAppInfo().values().stream()
+                    .filter(requestedAppFilter(request)).collect(Collectors.toList());
         }, gson::toJson);
 
         get("/v1/apps/:appId", (request, response) -> {
@@ -96,4 +102,28 @@ public class DiscoWebServer {
         }
     }
 
+    private Predicate<AppInfo> requestedAppFilter(final Request request) {
+        final List<Predicate<AppInfo>> predicates = new ArrayList<>();
+
+        request.queryParams().stream()
+                .forEach(queryParam -> {
+                    switch (queryParam) {
+                        case "name":
+                            predicates.add(appInfo -> appInfo.getName().equals(request.queryParams(queryParam)));
+                            break;
+                        case "hostname":
+                            predicates.add(appInfo -> appInfo.getHostname().equals(request.queryParams(queryParam)));
+                            break;
+                        default:
+                            predicates.add(appInfo -> {
+                                final Optional<String> value = Optional.ofNullable(appInfo.getAppAttributes().get(queryParam));
+                                return value.isPresent()
+                                        && !value.get().isEmpty()
+                                        && value.get().equals(request.queryParams(queryParam));
+                            });
+                            break;
+                    }
+                });
+        return predicates.stream().reduce(predicate -> true, Predicate::and);
+    }
 }

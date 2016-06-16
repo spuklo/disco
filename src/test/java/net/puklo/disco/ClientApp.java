@@ -5,6 +5,8 @@ import jodd.http.HttpRequest;
 import jodd.http.HttpResponse;
 import net.puklo.disco.model.AppReg;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
@@ -22,7 +24,12 @@ public class ClientApp {
         final Integer port = Integer.valueOf(System.getProperty("app.port"));
 
         final Gson gson = new Gson();
-        final AppReg reg = new AppReg(name, "1.0." + port, "localhost", "http://localhost:" + port + "/health");
+
+        final Map<String, String> attribs = new HashMap<>();
+        attribs.put("foo", "bar");
+
+        final AppReg reg = new AppReg(name, "1.0." + port, "localhost", "http://localhost:" + port + "/health",
+                attribs);
 
         port(port);
         get("/health", (req, res) -> {
