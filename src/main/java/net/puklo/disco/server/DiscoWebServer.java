@@ -14,6 +14,7 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_CREATED;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_FOUND;
 import static spark.Spark.after;
@@ -57,7 +58,7 @@ public class DiscoWebServer {
         }, gson::toJson);
 
         post("/v1/apps", (request, response) -> {
-            final AppReg appReg = gson.fromJson(request.body(), AppReg.class);
+            final AppReg appReg = appRegOr400(request.body());
             final UUID appId = appStorageBackend.postAppInfo(appReg);
             response.status(SC_CREATED);
             LOGGER.info("App registered: " + appReg);
@@ -91,6 +92,15 @@ public class DiscoWebServer {
         }
         halt(SC_NOT_FOUND);
         return null; // this is never returned as halt() throws an exception
+    }
+
+    private AppReg appRegOr400(final String requestBody) {
+        try {
+            return gson.fromJson(requestBody, AppReg.class);
+        } catch (final IllegalArgumentException ignored) {
+            halt(SC_BAD_REQUEST);
+            return null;
+        }
     }
 
     private UUID appIdOr404(final String maybeUuid) {

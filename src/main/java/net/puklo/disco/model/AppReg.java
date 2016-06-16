@@ -61,6 +61,16 @@ public class AppReg {
         return appAttributes;
     }
 
+    private Map verifyValidKeys(final Map<String, String> inputMap) {
+        if (inputMap.isEmpty()) {
+            return inputMap;
+        }
+        if (inputMap.keySet().contains("name") || inputMap.keySet().contains("hostname")) {
+            throw new IllegalArgumentException("Attributes with names 'name' and 'hostname' are not allowed.");
+        }
+        return inputMap;
+    }
+
     @Override
     public String toString() {
         return "AppReg{" +
