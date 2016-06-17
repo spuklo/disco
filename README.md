@@ -1,4 +1,5 @@
 # DISCO - application discovery service
+[![Build Status](https://travis-ci.org/spuklo/disco.svg?branch=master)](https://travis-ci.org/spuklo/disco)
 
 Simple, HTTP-based, application discovery service that helps you to manage
 applications running in your environment.
@@ -10,7 +11,7 @@ applications running in your environment.
 - Asynchronous polling so main server is not blocked for app registration/removal
 
 ## TODO
-- Plug this repo to Travis or other CI service
+- ~~Plug this repo to Travis or other CI service~~
 - Publish jar of Disco server (Bintray?)
 - Document current RESTful API & data model
 - Persisting registered application data (in-memory storage for now)  
