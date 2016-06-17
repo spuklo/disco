@@ -37,6 +37,13 @@ public class AppReg {
         this(name, version, hostname, null, emptyMap());
     }
 
+    public AppReg(final String name,
+                  final String version,
+                  final String hostname,
+                  final Map<String, String> appAttributes) {
+        this(name, version, hostname, null, appAttributes);
+    }
+
     public String getName() {
         return name;
     }
